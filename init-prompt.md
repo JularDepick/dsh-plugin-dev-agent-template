@@ -42,7 +42,7 @@
        - 生成 `src/translation/index.ts`:按 locale 加载对应 `xx-YY.ini`、解析 `[translation]` 节键值、未命中回退默认语言(`zh-CN`)、提供语言切换入口;涉及的常量(回退语言、翻译目录)引用 `src/constants.ts`。
        - 键值与加载行为遵循 `docs/tech-spec/translation-ini.md`;文件缺失时回退空表,由主逻辑兜底。
      - 按新项目机制规划业务模块目录(如认证/凭证/工具等,以项目机制为准),模块内拆分类型定义与实现,占位方法以抛错或空值标明"尚未实现"。
-   - 补齐打包配置:根目录 `package.json`(声明 `dsh.bundle`、`main/types`、`files`)、`cordis.patch.yml`(patch 层插入插件行)、`tsconfig.json`、`tsdown.config.ts`。
+   - 补齐打包配置:根目录 `package.json`(声明 `type: module`(ESM)、`dsh.bundle`、`main/types`、`files`)、`cordis.patch.yml`(patch 层插入插件行)、`tsconfig.json`、`tsdown.config.ts`。
    - 初始化项目文档体系:更新 `AGENTS.md` 的项目绑定区(概述/技术栈/目录结构/设计细节/版本号索引);完善 `version.index.md`(模板已随释放就位:记录项目当前版本号,并列出版本号迭代需同步更新的文件清单,含文件路径与行号;初始版本号按 repo-spec 规范确定起始值,如 `v0.1.0`,建立后向用户报告并确认,再登记进 AGENTS.md 版本号索引段);**询问用户是否添加 `.gitignore`**(按用户意愿建立;库包惯例:忽略 `node_modules/`、`.pnpm-store/`、`*.tgz`、产物目录等;版本文档占用 `v*-*.md` 规则;不做 IDE 类多余预留);按需增补 `docs/tech-spec/` 的机制规格文档;`LICENSE` 按用户意愿重建或延后。
    - 改造 README 预设:替换 `README_zh-CN.md`、`README_en-US.md` 中的占位内容(项目名、简介、特性、作者、仓库地址、许可证等)并补全正文,使其符合用户项目实际;按用户指定核心语言(默认中文)将对应语言版本更名为 `README.md`,另一语言版本保留 `README_<语言>.md` 命名;语言互链同步更新为更名后的文件名;README 命名与改造结果登记到 AGENTS.md 目录结构与 version.index.md 同步清单。询问用户是否乐意支持模板推广:若支持,在 README「相关链接」中新增条目「本仓库使用的插件模板: https://github.com/JularDepick/dsh-plugin-dev-agent-template」;不支持则不添加。
    - 改造 `AGENTS.md` 空白模板:
@@ -103,12 +103,12 @@
 
 - 插件本质:导出 `apply(ctx)` 的 TypeScript 模块;`ctx` 是上下文,经它注册能力(工具、事件、资源)。三种形态(函数/对象/类),一般函数形式即可。
 - 插件名:导出 `name`;必需依赖用 `export const inject = ['services...']` 声明,框架保证依赖就绪后才执行 `apply`。
-- 配置:导出同名 `Config` 类型 + Schemastery `Schema`(默认值写入 schema);无效配置在加载期响亮失败;不导出普通对象。
+- 配置:导出同名 `Config` 类型 + Schemastery `Schema`(默认值写入 schema);无效配置在加载期响亮失败;不导出普通对象。设计原则:凡不同部署取值可能不同的参数都必须定义为配置字段(无硬编码可调参数),检验标准为能否在 `cordis.yml` 中改值而不改代码。
 - 工具:经 `ctx.tools.register(defineTool({ name, description, parameters, output, execute }))`;`output.render` 把规范值转成面向模型的内容;需要 `inject: ['tools']`。
-- 生命周期:插件 Fiber 状态机;经 `ctx` 的注册在卸载时自动清理;手动资源用 `ctx.effect(() => cleanup)`。
-- 服务与依赖:服务是挂在 `ctx` 上的命名能力;`inject` 声明必需依赖,可选依赖用 `ctx.get()`;服务消失会触发依赖插件自动卸载并在恢复后重载。
-- 事件:`ctx.on`/`ctx.emit`,四种模式(emit 广播/bail 短路/serial 顺序/waterfall 流水线,waterfall 监听器必须调用 `next()`);类型安全用声明合并扩展事件接口。
-- bundle 打包:包清单声明 `dsh.bundle` 与 patch 层;patch 以插件包名插入插件行,加载顺序按 profile bundles 列表;后应用的层按行胜出(整行替换,不深度合并)。`dsh plugin --profile <name> add <包>` 安装;git 安装只拉源码,需 `prepare` 脚本且用户授权构建。
+- 生命周期:插件 Fiber 状态机;经 `ctx` 的注册在卸载时自动清理;手动资源用 `ctx.effect(() => cleanup)`;处置器按注册逆序调用、异步处置器并发执行,有顺序依赖的清理须放进同一处置器中串行;需提前终止插件实例用 `await fiber.dispose()`。
+- 服务与依赖:服务是挂在 `ctx` 上的命名能力;`inject` 声明必需依赖,可选依赖用 `ctx.get()`;服务消失会触发依赖插件自动卸载并在恢复后重载;提供服务用 `extends Service` + 声明合并扩展 `Context` 类型;`cordis.yml` 支持服务隔离(`isolate`,同一服务多实例、不同插件组见不同实例)。
+- 事件:`ctx.on`/`ctx.emit`,四种模式(emit 广播/bail 短路/serial 顺序/waterfall 流水线,waterfall 监听器必须调用 `next()`);类型安全用声明合并扩展事件接口;Harness 事件遵循 `namespace/action` 命名,`turn/*`、`step/*`、`tool/call` 等是持久化会话事件类型而非同名 Cordis 事件,观察它们要监听 `session/event` 并检查 `event.type`。
+- bundle 打包:包清单声明 `dsh.bundle` 与 patch 层;patch 以插件包名插入插件行,加载顺序按 profile bundles 列表;后应用的层按行胜出(整行替换,不深度合并)。`dsh plugin --profile <name> add <包>` 安装;git 安装只拉源码,需作者提供自包含的 `prepare` 脚本,且用户在 profile 的 `pnpm-workspace.yaml` 里 `allowBuilds` 授权;不希望用户授权则分发 npm 包或 tarball(`pnpm pack`)。
 - 目录组织:入口、配置 schema、全局常量(设计细节)独立成文件,机制按模块分目录,模块内拆分类型定义与实现;占位方法以抛错或空值标明"尚未实现"。
 - 代码规范:代码英文、注释中文(跨行注释)、无 emoji、对象封装、可复用模板提成独立文件、后端文件注释头标注作者。
 
