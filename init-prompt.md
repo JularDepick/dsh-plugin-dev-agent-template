@@ -43,7 +43,7 @@
        - 键值与加载行为遵循 `docs/tech-spec/translation-ini.md`;文件缺失时回退空表,由主逻辑兜底。
      - 按新项目机制规划业务模块目录(如认证/凭证/工具等,以项目机制为准),模块内拆分类型定义与实现,占位方法以抛错或空值标明"尚未实现"。
    - 补齐打包配置:根目录 `package.json`(声明 `type: module`(ESM)、`dsh.bundle`、`main/types`、`files`)、`cordis.patch.yml`(patch 层插入插件行)、`tsconfig.json`、`tsdown.config.ts`。
-   - 初始化项目文档体系:更新 `AGENTS.md` 的项目绑定区(概述/技术栈/目录结构/设计细节/版本号索引);完善 `version.index.md`(模板已随释放就位:记录项目当前版本号,并列出版本号迭代需同步更新的文件清单,含文件路径与行号;初始版本号按 repo-spec 规范确定起始值,如 `v0.1.0`,建立后向用户报告并确认,再登记进 AGENTS.md 版本号索引段);**询问用户是否添加 `.gitignore`**(按用户意愿建立;库包惯例:忽略 `node_modules/`、`.pnpm-store/`、`*.tgz`、产物目录等;版本文档占用 `v*-*.md` 规则;不做 IDE 类多余预留);按需增补 `docs/tech-spec/` 的机制规格文档;`LICENSE` 按用户意愿重建或延后。
+   - 初始化项目文档体系:更新 `AGENTS.md` 的项目绑定区(概述/技术栈/目录结构/设计细节/版本号索引);完善 `version.index.md`(模板已随释放就位:记录项目当前版本号,并列出版本号迭代需同步更新的文件清单,含文件路径与行号;初始版本号按 repo-spec 规范确定起始值,如 `v0.1.1`,建立后向用户报告并确认,再登记进 AGENTS.md 版本号索引段);**询问用户是否添加 `.gitignore`**(按用户意愿建立;库包惯例:忽略 `node_modules/`、`.pnpm-store/`、`*.tgz`、产物目录等;版本文档占用 `v*-*.md` 规则;不做 IDE 类多余预留);按需增补 `docs/tech-spec/` 的机制规格文档;`LICENSE` 按用户意愿重建或延后。
    - 改造 README 预设:替换 `README_zh-CN.md`、`README_en-US.md` 中的占位内容(项目名、简介、特性、作者、仓库地址、许可证等)并补全正文,使其符合用户项目实际;按用户指定核心语言(默认中文)将对应语言版本更名为 `README.md`,另一语言版本保留 `README_<语言>.md` 命名;语言互链同步更新为更名后的文件名;README 命名与改造结果登记到 AGENTS.md 目录结构与 version.index.md 同步清单。询问用户是否乐意支持模板推广:若支持,在 README「相关链接」中新增条目「本仓库使用的插件模板: https://github.com/JularDepick/dsh-plugin-dev-agent-template」;不支持则不添加。
    - 改造 `AGENTS.md` 空白模板:
      - 替换作者信息:模板守则区中模板作者占位(如"项目作者 [JularDepick](https://github.com/JularDepick)")替换为用户的实际 GitHub 身份;
