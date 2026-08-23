@@ -115,10 +115,10 @@
 ## 七、构建与测试经验(Windows + 沙箱环境)
 
 - 依赖版本对齐:先查本地已装 dsh 各包版本(`node_modules/@deepseek-ai/*/package.json`),与 npm registry 发布版本比对,对齐到本地运行版本(带 rc 的包需核对 registry 的 next 标签)。
-- npm/pnpm 写缓存到工作区外会被拒(EPERM):store/cache/state 重定向到工作区内(如 `.agent/`);pnpm 曾把内容寻址 store 落到工作区根 `.pnpm-store/`,记得加入 .gitignore。
+- npm/pnpm 写缓存到工作区外会被拒(EPERM):store/cache/state 重定向到工作区内(如 `.agents/`);pnpm 曾把内容寻址 store 落到工作区根 `.pnpm-store/`,记得加入 .gitignore。
 - tsdown 产物为 `.mjs/.d.mts`,`package.json` 的 `main/types` 必须与真实产物对齐。
 - Node 动态 import 绝对路径必须转 `file://`(Windows 报 ERR_UNSUPPORTED_ESM_URL_SCHEME)。
-- 冒烟测试(临时脚本放 `.agent/`):对构建产物断言入口导出、配置默认值、假 ctx 验证装配与工具注册、翻译加载回退;`pnpm pack` 后列 tarball 内容核对打包边界(`files` 收窄,避免源码混入)。
+- 冒烟测试(临时脚本放 `.agents/`):对构建产物断言入口导出、配置默认值、假 ctx 验证装配与工具注册、翻译加载回退;`pnpm pack` 后列 tarball 内容核对打包边界(`files` 收窄,避免源码混入)。
 - PowerShell 每次调用独立无状态,必要时传 `workdir`;控制台中文乱码不代表文件损坏(UTF-8 正常)。
 
 ## 八、下一步开发建议
@@ -133,5 +133,5 @@
 - 沟通与注释用中文;文档与代码不用 emoji;维护 md 全量加载避免遗漏,允许改写不得丢失细节。
 - git 写入(add/commit/push/tag/release)需用户当次授权;staging 只允许 `git add .`;未授权不动 tag/release/push。
 - 目录结构变化时同步更新 `AGENTS.md` 目录结构、版本号索引同步清单与 `.gitignore`。
-- 临时测试/脚本/报告放 `.agent/` 或 `temp/`,避免污染项目本体。
+- 临时测试/脚本/报告放 `.agents/` 或 `temp/`,避免污染项目本体。
 - 每次变更新增"变更大纲 + 部分重要细节",不照抄全文。
