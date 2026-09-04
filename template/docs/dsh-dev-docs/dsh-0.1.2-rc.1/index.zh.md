@@ -1,16 +1,16 @@
-# dsh 插件开发文档（v0.1.1-rc.2）
+# dsh 插件开发文档（v0.1.2-rc.1）
 
 > 面向 Agent 的利用指南与速查：请查看 `index.agent.md`。
 
 [dsh](https://github.com/deepseek-ai/deepseek-harness) 官方插件开发文档的**中文版**合集索引。
 
-本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.1.1-rc.2**（npm 发布包版本号）时期的中文版（`.zh.md`）文档（英文原版见各 `.md`）。内容来源于官方仓库 master 分支，作为本项目开发 dsh 插件时的参考指引。
+本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.1.2-rc.1**（npm 发布包版本号）时期的中文版（`.zh.md`）文档（英文原版见各 `.md`）。内容来源于官方仓库 master 分支，作为本项目开发 dsh 插件时的参考指引。
 
 | 分块 | 作用 |
 |:---:|:---|
 | [基础](basic/) | 从零写第一个插件：工具、配置、打包安装 |
 | [框架](framework/) | Cordis 插件模型：生命周期、事件、服务与依赖 |
-| [实战](practice/) | 能力三种角色设计与 LLM 适配器 |
+| [实战](practice/) | 能力三种角色设计、LLM 适配器与动态 Cordis |
 
 > 说明：本目录仅收录 `docs/user/develop/` 下的中文文档。原文档中指向仓其他路径的链接（如 `README.zh.md`、`cordis-tutorial/`、`subsystems/`、`capability-seams.md`、`cookbook/`、`apps/cli/`、`packages/` 等）不在本次下载范围内，如需参考请前往[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看原路径。
 
@@ -43,6 +43,7 @@
 |:---:|:---|:---:|
 | [index.zh.md](practice/index.zh.md) | 能力的三种角色设计：Service Definition / Service Provider / Consumer 三角色拆分与组合，以 Bash 为例详解教程；设计要点（不预防性拆分、显式优于隐式） | 基础、framework/service |
 | [llm-adapter.zh.md](practice/llm-adapter.zh.md) | LLM 适配器：接入新的模型提供方，继承 `LlmAdapter` 实现 `stream()`，StreamChunk 协议、GenerateOptions、`resolveModel`/`listModels`、错误处理 | practice/index |
+| [dynamic-cordis.zh.md](practice/dynamic-cordis.zh.md) | 动态 Cordis：启用 `@deepseek-ai/dsh-tool-cordis` 后，智能体可在内存中挂载/卸载模型编写的插件（临时、随卸载/退出消失） | practice/index |
 
 ## 建议阅读顺序
 
@@ -58,6 +59,7 @@ flowchart LR
     F --> H[practice/index 能力三角色]
     G --> H
     H --> I[practice/llm-adapter LLM 适配器]
+    H --> J[practice/dynamic-cordis 动态 Cordis]
 ```
 
 建议从 **basic/index**（第一个插件）进入，沿「基础 → 框架 → 实战」逐篇推进；框架与实战依赖基础部分的示例项目。

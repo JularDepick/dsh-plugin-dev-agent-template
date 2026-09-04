@@ -1,10 +1,10 @@
-# Agent 阅读指南 —— dsh 插件开发文档（v0.1.1-rc.2）
+# Agent 阅读指南 —— dsh 插件开发文档（v0.1.2-rc.1）
 
 本文档是给 Agent（自动编程代理）看的使用索引：说明这份文档集装了什么、各篇回答什么问题、在涉及 dsh 插件开发的常见任务中该查哪篇。用户一般不读本文档。
 
 ## 这份文档集是什么
 
-本目录 `docs/dsh-dev-docs/dsh-0.1.1-rc.2/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.1.1-rc.2 时期的中文版插件开发文档（共 9 篇 + 本索引；英文原版见各 `.md`，中文见 `.zh.md`）。它只覆盖 `docs/user/develop/` 路径；原文档中指向仓其他位置的链接（根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等）未随本目录下载，需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。
+本目录 `docs/dsh-dev-docs/dsh-0.1.2-rc.1/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.1.2-rc.1 时期的中文版插件开发文档（共 10 篇 + 本索引；英文原版见各 `.md`，中文见 `.zh.md`）。它只覆盖 `docs/user/develop/` 路径；原文档中指向仓其他位置的链接（根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等）未随本目录下载，需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。
 
 ## 速查：什么任务查哪篇
 
@@ -19,6 +19,7 @@
 | 插件之间要松耦合通信 | [事件系统](framework/events.zh.md) |
 | 想把能力拆成可替换的提供方 | [能力的三种角色](practice/index.zh.md) |
 | 要接入一个新的模型提供方（LLM） | [LLM 适配器](practice/llm-adapter.zh.md) |
+| 要在运行中的智能体里动态挂载/卸载模型编写的插件 | [动态 Cordis](practice/dynamic-cordis.zh.md) |
 
 ## 各篇核心结论（速记）
 
@@ -38,7 +39,8 @@
 ### 实战（practice）
 
 - **三层能力**：Service Definition（契约 + Request/Result 类型）/ Service Provider（实现）/ Consumer（暴露为工具）。Provider 和 Consumer 只依赖 Definition、互不依赖。不要预防性拆分；显式优于隐式（用显式的 `resolve(request): Spec` 步骤处理默认值，不在 `run()` 中隐藏 `?? default`）。
-- **LLM 适配器**：继承 `LlmAdapter` 覆写 `stream()`（异步生成 `StreamChunk`），`ctx.llm.registerAdapter(['provider'], adapter)`。StreamChunk 协议：`block-start`/`text-delta`（或 `tool-call-delta`）/`block-end` 成对出现，`finish` 必须是最后一个分片、`usage` 在 `finish` 前，`index` 从 0 递增，工具调用用 `CallId`；错误抛带稳定 code 的 `LlmError`；合并 `attributionHeaders()` 并传递 `options.signal`；可覆写 `resolveModel()`、`listModels()`。
+- **LLM 适配器**：继承 `LlmAdapter` 覆写 `stream()`（异步生成 `StreamChunk`），`ctx.llm.registerAdapter(['provider'], adapter)`。StreamChunk 协议：`block-start`/`text-delta`（或 `tool-call-delta`）/`block-end` 成对出现，`finish` 必须是最后一个分片、`usage` 在 `finish` 前，`index` 从 0 递增；工具调用 ID 用 `brandString<ToolCallId>('...')`（`ToolCallId` 来自 `@deepseek-ai/dsh-llm`，`brandString` 来自 `@deepseek-ai/dsh-brand`）。错误抛带稳定 code 的 `LlmError`；合并 `attributionHeaders()` 并传递 `options.signal`；可覆写 `resolveModel()`、`listModels()`。
+- **动态 Cordis**：启用 `@deepseek-ai/dsh-tool-cordis` 后，智能体可以检查当前 Cordis 进程并在内存中挂载/卸载模型编写的插件；临时插件在卸载或进程退出时消失，并可能影响同一进程的其他会话。工具参数、存续时间、清理行为与安全性约定见官方 `packages/extensions/tool-cordis` 参考。
 
 ## 给你的操作提示
 
