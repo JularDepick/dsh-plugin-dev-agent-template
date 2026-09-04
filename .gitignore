@@ -1,0 +1,4 @@
+# Agent Runtime
+.agent/
+.agents/
+temp/

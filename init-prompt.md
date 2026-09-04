@@ -11,7 +11,7 @@
 ## 二、模板定位与预设
 
 - `template/` 下已提供(初始化时释放到仓库根目录):
-  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/`(先读 `index.agent.md` 速查表,再按需精读基础篇与框架篇)
+  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/`(先读 `index.agent.md` 速查表,再按需精读基础篇、框架篇与实战篇)
   - 仓库级规范 `template/docs/repo-spec/tag-release-spec.md`(版本号、Tag、Release 命名)
   - 技术规格 `template/docs/tech-spec/translation-ini.md`(翻译文件规范)与翻译文件预设 `template/src/translation/`(仅含 `xx-YY.ini` 与基准模板,不含加载器源码)
   - README 预设:`template/README_zh-CN.md`、`template/README_en-US.md`(中英双语模板,含占位内容与语言互链;初始化时按项目实际替换并按核心语言更名,见"三")
@@ -88,7 +88,7 @@
 迁移执行时:
 
 - 全量加载 AGENTS.md 后改写;允许转述、浓缩、适当取舍(如模板使用说明、初始化一次性细节),但不得丢失可复用经验与项目决策记录。
-- 关键要点必须保留:插件本质(name/apply/inject)、配置 schema、工具注册、生命周期与服务依赖、事件模式、bundle 打包与层规则、版本对齐、缓存重定向、产物后缀、file:// import、冒烟测试套路,以及本项目实际选型与路径。
+- 关键要点必须保留:插件本质(name/apply/inject)、配置 schema、工具注册、生命周期与服务依赖、事件模式、LLM 适配器(StreamChunk 协议)、bundle 打包与层规则、版本对齐、缓存重定向、产物后缀、file:// import、冒烟测试套路,以及本项目实际选型与路径。
 - 维护规则持久化:把"按需检查 dsh 插件开发者文档是否过时,过时则按官方收录流程更新到 `docs/dsh-dev-docs/<新版本>/`"这一维护规则写入新项目 AGENTS.md 项目绑定区(如设计细节或维护规则相关段落),使其成为持久化规则,后续会话只读 AGENTS.md 即可遵循。
 - version.index.md 说明注入:把 version.index.md 的定位与维护方式写入 AGENTS.md 版本号索引段——记录项目当前版本号,并列出版本号迭代需同步更新的文件清单(文件路径与行号);读取时先查看 git 历史、配置文件、关键文档,向用户汇报确认真实版本号,需要时更新;版本号迭代时按清单同步更新所列文件中的版本号,允许继续新增清单项;版本号格式遵循 `docs/repo-spec/tag-release-spec.md`。使后续会话只读 AGENTS.md 即可知晓 version.index.md 的用途与维护规则。
 - 文档语言核心决策持久化:把"项目文档语言核心"询问的结论(默认 `README.md` 为中文,英文作为额外文档)写入新项目 AGENTS.md 项目绑定区(如概述或设计细节段落),后续会话据此维护文档语言布局。
@@ -103,12 +103,14 @@
 
 - 插件本质:导出 `apply(ctx)` 的 TypeScript 模块;`ctx` 是上下文,经它注册能力(工具、事件、资源)。三种形态(函数/对象/类),一般函数形式即可。
 - 插件名:导出 `name`;必需依赖用 `export const inject = ['services...']` 声明,框架保证依赖就绪后才执行 `apply`。
-- 配置:导出同名 `Config` 类型 + Schemastery `Schema`(默认值写入 schema);无效配置在加载期响亮失败;不导出普通对象。设计原则:凡不同部署取值可能不同的参数都必须定义为配置字段(无硬编码可调参数),检验标准为能否在 `cordis.yml` 中改值而不改代码。
-- 工具:经 `ctx.tools.register(defineTool({ name, description, parameters, output, execute }))`;`output.render` 把规范值转成面向模型的内容;需要 `inject: ['tools']`。
-- 生命周期:插件 Fiber 状态机;经 `ctx` 的注册在卸载时自动清理;手动资源用 `ctx.effect(() => cleanup)`;处置器按注册逆序调用、异步处置器并发执行,有顺序依赖的清理须放进同一处置器中串行;需提前终止插件实例用 `await fiber.dispose()`。
+- 配置:导出同名 `Config` 类型 + Schemastery `Schema`(默认值写入 schema);无效配置在加载期响亮失败;不导出普通对象。设计原则:凡不同部署取值可能不同的参数都必须定义为配置字段(无硬编码可调参数),检验标准为能否在 `cordis.yml` 中改值而不改代码;配置变更会触发 HMR 热替换(卸载旧实例、加载新实例,注册随 effect 自动清理)。
+- 工具:经 `ctx.tools.register(defineTool({ name, description, parameters, output, execute }))`;`parameters` 定义入参 schema,`execute` 返回 `output.schema` 声明的规范值,`output.render` 把规范值转成面向模型的内容;需要 `inject: ['tools']`。
+- 生命周期:插件 Fiber 状态机(`PENDING → LOADING → ACTIVE/FAILED`、卸载 `ACTIVE → UNLOADING → DISPOSED`);经 `ctx` 的注册在卸载时自动清理;手动资源用 `ctx.effect(() => cleanup)`;处置器按注册逆序调用、异步处置器并发执行,有顺序依赖的清理须放进同一处置器中串行;子插件用 `ctx.plugin()` 创建、随父卸载;需提前终止插件实例用 `await fiber.dispose()`(移除注册、递归卸载子插件、等待异步清理完成)。
 - 服务与依赖:服务是挂在 `ctx` 上的命名能力;`inject` 声明必需依赖,可选依赖用 `ctx.get()`;服务消失会触发依赖插件自动卸载并在恢复后重载;提供服务用 `extends Service` + 声明合并扩展 `Context` 类型;`cordis.yml` 支持服务隔离(`isolate`,同一服务多实例、不同插件组见不同实例)。
 - 事件:`ctx.on`/`ctx.emit`,四种模式(emit 广播/bail 短路/serial 顺序/waterfall 流水线,waterfall 监听器必须调用 `next()`);类型安全用声明合并扩展事件接口;Harness 事件遵循 `namespace/action` 命名,`turn/*`、`step/*`、`tool/call` 等是持久化会话事件类型而非同名 Cordis 事件,观察它们要监听 `session/event` 并检查 `event.type`。
-- bundle 打包:包清单声明 `dsh.bundle` 与 patch 层;patch 以插件包名插入插件行,加载顺序按 profile bundles 列表;后应用的层按行胜出(整行替换,不深度合并)。`dsh plugin --profile <name> add <包>` 安装;git 安装只拉源码,需作者提供自包含的 `prepare` 脚本,且用户在 profile 的 `pnpm-workspace.yaml` 里 `allowBuilds` 授权;不希望用户授权则分发 npm 包或 tarball(`pnpm pack`)。
+- bundle 打包:组合包(bundle)是附带一个配置层的 npm 包,manifest 声明 `dsh.bundle`(指向 patch 文件);profile 是 `$DSH_HOME/profiles/<name>` 下描述可启动组合的目录,manifest 声明 `dsh.profile` 及有序 `bundles`。patch 以插件包名插入插件行;生效配置层顺序:profile bundles 列表 → profile 自己的 `cordis.patch.yml` → home 级 → 每个 `--patch` overlay,后应用的层按行胜出(整行替换 `config`,不深度合并)。`dsh plugin --profile <name> add <包>` 安装;git 安装只拉源码,需作者提供自包含的 `prepare` 脚本,且用户在 profile 的 `pnpm-workspace.yaml` 里 `allowBuilds` 授权;不希望用户授权则分发 npm 包或 tarball(`pnpm pack`)。
+- LLM 适配器:继承 `LlmAdapter` 覆写 `stream()`(异步生成 `StreamChunk`),经 `ctx.llm.registerAdapter(['provider'], adapter)` 注册;StreamChunk 协议:`block-start`/`text-delta`(或 `tool-call-delta`)/`block-end` 成对出现,`finish` 必须是最后一个分片、`usage` 在 `finish` 前,`index` 从 0 递增;工具调用 ID 用 `brandString<ToolCallId>('...')`(`ToolCallId` 来自 `@deepseek-ai/dsh-llm`,`brandString` 来自 `@deepseek-ai/dsh-brand`);错误抛带稳定 code 的 `LlmError`;合并 `attributionHeaders()` 并传递 `options.signal`;可覆写 `resolveModel()`、`listModels()`。
+- 动态 Cordis:启用 `@deepseek-ai/dsh-tool-cordis` 后,智能体可检查当前 Cordis 进程并在内存中挂载/卸载模型编写的插件;临时插件在卸载或进程退出时消失,并可能影响同一进程的其他会话,工具参数、存续时间、清理行为与安全性约定见官方 `packages/extensions/tool-cordis` 参考。
 - 目录组织:入口、配置 schema、全局常量(设计细节)独立成文件,机制按模块分目录,模块内拆分类型定义与实现;占位方法以抛错或空值标明"尚未实现"。
 - 代码规范:代码英文、注释中文(跨行注释)、无 emoji、对象封装、可复用模板提成独立文件、后端文件注释头标注作者。
 
