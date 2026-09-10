@@ -1,10 +1,10 @@
-# dsh 插件开发文档（v0.1.2-rc.1）
+# dsh 插件开发文档（v0.1.5-rc.1）
 
 > 面向 Agent 的利用指南与速查：请查看 `index.agent.md`。
 
 [dsh](https://github.com/deepseek-ai/deepseek-harness) 官方插件开发文档的**中文版**合集索引。
 
-本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.1.2-rc.1**（npm 发布包版本号）时期的中文版（`.zh.md`）文档（英文原版见各 `.md`）。内容来源于官方仓库 master 分支，作为本项目开发 dsh 插件时的参考指引。
+本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.1.5-rc.1**（npm 发布包版本号）时期的中文版（`.zh.md`）文档（英文原版见各 `.md`）。内容来源于官方仓库 master 分支，作为本项目开发 dsh 插件时的参考指引。
 
 | 分块 | 作用 |
 |:---:|:---|
@@ -23,7 +23,7 @@
 | [index.zh.md](basic/index.zh.md) | 第一个插件：创建最小 Harness 插件并加载到 Web UI。插件本质（导出 `apply` 的 TS 模块）、三种形态（函数/对象/类）、自动清理、依赖声明 | 无 |
 | [tool.zh.md](basic/tool.zh.md) | 开发一个工具：用 `defineTool` 定义模型可调用工具，含参数校验、输出 schema 与 render | 基础 index |
 | [config.zh.md](basic/config.zh.md) | 插件配置：Schemastery schema 声明显式配置与默认值；设计原则（无硬编码可调参数、配置错误要响亮）；配合 HMR | 基础 index |
-| [publish.zh.md](basic/publish.zh.md) | 打包与安装：组合包（bundle）与 profile 两种概念、`dsh plugin` 安装、配置层顺序、表层组合包持有命令行、GitHub 安装与构建脚本（`prepare` + `allowBuilds`） | 基础 index、config |
+| [publish.zh.md](basic/publish.zh.md) | 打包与安装：组合包（bundle）与 profile 两种概念、profile 的两种创建入口（`--from-default-profile` 与 `dsh plugin`）、`dsh plugin` 安装、配置层顺序、表层组合包持有命令行、GitHub 安装与构建脚本（`prepare` + `allowBuilds`） | 基础 index、config |
 
 ## 框架（framework）
 
