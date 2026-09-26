@@ -1,14 +1,14 @@
-# LLM adapters
+# LLM 适配器
 
-English | [中文](llm-adapter.zh.md)
+[English](llm-adapter.md) | 中文
 
-This guide connects a new LLM provider to Harness.
+本文介绍如何为 Harness 接入新的模型提供方。
 
-## Overview
+## 概述
 
-An LLM adapter extends `LlmAdapter` and implements `stream()`, translating Harness's provider-neutral request into a provider API call and translating the response back into Harness chunks.
+LLM 适配器是一个继承 `LlmAdapter` 并实现 `stream()` 方法的类，它会将 Harness 的提供方无关请求转换为具体提供方的 API 调用，并将响应转换回 Harness 分片。
 
-## Minimal implementation
+## 最小实现
 
 ```ts
 import type { Context } from '@deepseek-ai/cordis'
@@ -49,9 +49,9 @@ export function apply(ctx: Context, config: Config) {
 }
 ```
 
-## StreamChunk protocol
+## StreamChunk 协议
 
-`stream()` yields chunks using this protocol:
+`stream()` 必须按以下协议生成分片：
 
 ```ts
 import { brandString } from '@deepseek-ai/dsh-brand'
@@ -101,29 +101,29 @@ async function* exampleChunks(): AsyncIterable<StreamChunk> {
 }
 ```
 
-### Key rules
+### 关键规则
 
-- Every `block-start` has a matching `block-end`.
-- `index` increases from 0 and identifies content-block order.
-- A `tool-call-delta` carries raw JSON text in `argumentsDelta`, either all at once or over multiple chunks.
-- `finish` is the final chunk.
-- Emit `usage` before `finish`.
+- 每个 `block-start` 都必须有与之对应的 `block-end`。
+- `index` 从 0 开始递增，用于标识内容块的顺序。
+- `tool-call-delta` 的 `argumentsDelta` 是原始 JSON 文本的增量，可以在一个分片中完整生成，也可以分多个分片生成。
+- `finish` 必须是最后一个分片。
+- `usage` 必须在 `finish` 之前生成。
 
 ## GenerateOptions
 
-`stream()` receives the exported `GenerateOptions` type. It includes the model, adapter-owned reasoning-effort id, conversation history, system prompt, tool schemas, generation parameters, stop sequences, and abort signal; treat the TypeScript type exported by `@deepseek-ai/dsh-llm` as authoritative. Map supported fields to the provider API. If the provider cannot honor a field, throw `LlmError` with a stable code instead of silently dropping it.
+`stream()` 接收仓库导出的 `GenerateOptions`。它包含模型、适配器拥有的推理强度 ID、对话历史、系统提示词、工具 schema、生成参数、停止序列和中止信号；完整字段以 `@deepseek-ai/dsh-llm` 导出的 TypeScript 类型为准。适配器必须将支持的字段映射到具体 API；如果无法支持某个字段，应抛出带稳定 code 的 `LlmError`，不得静默丢弃。
 
-Override `resolveModel(provider, model, signal?)` to return exact provider/model identity plus optional `context` and `reasoning` metadata in one lookup. Reasoning metadata contains ordered opaque ids and display names plus an optional configured default; preserve the adapter's authoritative selectable list, including `off` when its upstream capability API returns it, instead of promoting those values into a core enum. Honor the optional signal for asynchronous lookup so cancellation and disposal reach quiescence. The service validates the aggregate and rejects unsupported explicit efforts before `stream()`; omitting `reasoning` means that model has no selectable reasoning-effort capability.
+请覆写 `resolveModel(provider, model, signal?)`，在一次查询中返回确切的提供方／模型身份以及可选的 `context` 和 `reasoning` 元数据。推理元数据包含有序的不透明 ID、展示名称，以及可选的配置默认值；请保留适配器给出的权威可选列表，包括其上游能力 API 返回的 `off`，不要将这些值提升为核心枚举。异步查询必须响应该可选信号，使取消和资源释放过程完全停稳。服务会校验聚合结果，并在调用 `stream()` 前拒绝显式指定但不受支持的推理强度；省略 `reasoning` 表示该模型没有可选的推理强度能力。
 
-## Register an adapter
+## 注册适配器
 
 ```ts ignore-check
 ctx.llm.registerAdapter(['my-provider'], adapter)
 ```
 
-The first argument lists provider routes handled by the adapter. `GenerateOptions.provider` selects the registered adapter, while `GenerateOptions.model` passes an adapter-owned model id without lifecycle registration. Override `listModels()` when the adapter can advertise model choices to selectors.
+第一个参数是该适配器处理的提供方路由列表。`GenerateOptions.provider` 选择已注册的适配器，`GenerateOptions.model` 则传入由适配器拥有、无需在生命周期启动时注册的模型 id。适配器能够向选择器公布模型选项时，请覆写 `listModels()`。
 
-## Use it from cordis.yml
+## 在 cordis.yml 中使用
 
 ```yaml
 - id: my-llm
@@ -142,18 +142,18 @@ The first argument lists provider routes handled by the adapter. `GenerateOption
         model: my-model-v1
 ```
 
-## Reference implementations
+## 实战参考
 
-The repository contains complete implementations:
+仓库中包含以下两个完整实现：
 
-- `packages/llm/llm-deepseek/` — DeepSeek API adapter using the OpenAI-compatible format
-- `packages/llm/llm-pi-ai/` — Pi AI adapter using a different API format
+- `packages/llm/llm-deepseek/` — 使用 Messages API 的 DeepSeek 适配器
+- `packages/llm/llm-pi-ai/` — Pi AI 适配器（不同的 API 格式）
 
-Compare the two shipped adapters to see the same harness contract implemented over different provider SDKs.
+对比这两个已交付的适配器，可以看到同一套 harness 契约如何在不同提供方 SDK 之上实现。
 
-## Error handling
+## 错误处理
 
-Adapters throw transport and protocol failures as `LlmError` values with stable codes. The agent loop preserves the error and code for diagnostics and policy; it does not convert an ordinary `Error` automatically. Every provider HTTP request must also merge `attributionHeaders()` and forward `options.signal`.
+适配器应通过带稳定 code 的 `LlmError` 抛出传输和协议故障；agent loop（智能体循环）会保留该错误及其 code，用于诊断和策略处理。不要依赖普通 `Error` 被自动转换。每个提供方 HTTP 请求还必须合并 `attributionHeaders()`，并传递 `options.signal`。
 
 ```ts
 import {
