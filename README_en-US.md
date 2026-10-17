@@ -2,7 +2,7 @@
 
 # dsh-plugin-dev-agent-template
 
-[![Version](https://img.shields.io/badge/Version-0.1.6-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.1.6)
+[![Version](https://img.shields.io/badge/Version-0.1.7-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.1.7)
 [![Copyright](https://img.shields.io/badge/Copyright-JularDepick-0066AA)](./COPYRIGHT)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](./LICENSE)
 

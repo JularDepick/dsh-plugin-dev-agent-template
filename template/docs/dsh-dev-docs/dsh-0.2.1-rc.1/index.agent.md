@@ -1,10 +1,10 @@
-# Agent 阅读指南 —— dsh 插件开发文档(v0.2.0-rc.2)
+# Agent 阅读指南 —— dsh 插件开发文档(v0.2.1-rc.1)
 
 本文档是给 Agent(自动编程代理)看的使用索引:说明这份文档集装了什么、各篇回答什么问题、在涉及 dsh 插件开发的常见任务中该查哪篇。用户一般不读本文档。
 
 ## 这份文档集是什么
 
-本目录 `docs/dsh-dev-docs/dsh-0.2.0-rc.2/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.2.0-rc.2(对应官方仓库标签 `dsh-v0.2.0-rc.2`)的中文版插件开发文档(共 10 篇 + 本索引;英文原版见各 `.md`,中文见 `.zh.md`;30 个上游文件已与该标签逐字节核对一致)。它只覆盖 `docs/user/develop/` 路径;原文档中指向仓其他位置的链接(根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等)未随本目录下载,需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。各篇同目录的 `.i18n.yaml` 是上游的双语一致性记录(按标题分节记录中英哈希),原样收录,与本项目自身的翻译机制无关。
+本目录 `docs/dsh-dev-docs/dsh-0.2.1-rc.1/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.2.1-rc.1(对应官方仓库标签 `dsh-v0.2.1-rc.1`)的中文版插件开发文档(共 10 篇 + 本索引;英文原版见各 `.md`,中文见 `.zh.md`;30 个上游文件已与该标签逐字节核对一致)。它只覆盖 `docs/user/develop/` 路径;原文档中指向仓其他位置的链接(根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等)未随本目录下载,需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。各篇同目录的 `.i18n.yaml` 是上游的双语一致性记录(按标题分节记录中英哈希),原样收录,与本项目自身的翻译机制无关。
 
 ## 速查:什么任务查哪篇
 
@@ -28,7 +28,7 @@
 - **插件本质**:一个导出 `apply(ctx)` 的 TypeScript 模块,`ctx` 是上下文,通过它注册能力。三种形态:函数、对象、类;一般用函数形式即可,需要向其他插件提供服务时用类形式(`extends Service`)。
 - **工具**:`ctx.tools.register(defineTool({ name, description, parameters, output, execute }))`。`parameters` 定义入参 schema,`execute` 返回 `output.schema` 声明的规范值,`output.render` 把值转成面向模型的内容。需要 `inject: ['tools']`。
 - **配置**:导出同名 `Config` 类型 + Schemastery schema(`Schema.object({...})`),默认值写进 schema;不能导出普通对象。设计原则:凡不同部署取值可能不同的参数都必须定义为配置字段(无硬编码可调参数);在 schema 中表达完备约束,使无效配置在插件加载时响亮失败。配置变更会触发 HMR(卸载旧实例、加载新实例,注册随 effect 自动清理)。
-- **打包**:组合包(bundle)是附带一个配置层的 npm 包,manifest 声明 `dsh.bundle`(指向 patch 文件;`patch` 也接受有序文件列表如 `["./base.patch.yml", "./web.patch.yml"]`,launcher 按该顺序把它们作为**同一层**应用,文件内的相对插件路径相对于该文件解析)。profile 是 `$DSH_HOME/profiles/<name>` 下描述可启动组合的目录,manifest 声明 `dsh.profile` 及有序 `bundles`。profile manifest 不需要手写:`dsh --profile <name> --from-default-profile <template>` 可从随附应用模板创建 profile,`dsh plugin` 则以 base 为基础创建 profile 并维护其已安装 bundle 列表(创建规则以 CLI 行为参考为准)。`dsh plugin --profile <name> add <包>` 安装;安装后可用 `dsh --profile <name> --dump-config` 先验证层、再启动。层顺序:bundles 列表 → profile 自己的 `cordis.patch.yml` → home 级 → 每个 `--patch` overlay;后应用的层按行胜出(patch 替换整行 `config`,不深度合并)。无 `dsh.bundle` 声明的包仍可安装但只作普通依赖(`dsh plugin` 打警告、不激活任何层),适合供插件包 import 的库。
+- **打包**:组合包(bundle)是附带一个配置层的 npm 包,manifest 声明 `dsh.bundle`(指向 patch 文件;`patch` 也接受有序文件列表如 `["./base.patch.yml", "./web.patch.yml"]`,launcher 按该顺序把它们作为**同一层**应用,文件内的相对插件路径相对于该文件解析)。组合包用 `engines.dsh` SemVer 范围声明其支持的 DSH 版本(如 `"engines": { "dsh": ">=0.2.0 <0.3.0" }`),安装与 profile 启动会拒绝运行中的 DSH 不满足该范围的组合包;未声明 `engines.dsh` 时改为检查其 `@deepseek-ai/dsh*` peer 依赖范围。profile 是 `$DSH_HOME/profiles/<name>` 下描述可启动组合的目录,manifest 声明 `dsh.profile` 及有序 `bundles`。profile manifest 不需要手写:`dsh --profile <name> --from-default-profile <template>` 可从随附应用模板创建或重置 profile,`dsh plugin` 则以 base 为基础创建 profile 并维护其已安装 bundle 列表(创建规则以 CLI 行为参考为准)。`dsh plugin --profile <name> add <包>` 安装;安装后可用 `dsh --profile <name> --dump-config` 先验证层、再启动。层顺序:bundles 列表 → profile 自己的 `cordis.patch.yml` → home 级 → 每个 `--patch` overlay;后应用的层按行胜出(patch 替换整行 `config`,不深度合并)。无 `dsh.bundle` 声明的包仍可安装但只作普通依赖(`dsh plugin` 打警告、不激活任何层),适合供插件包 import 的库。
 - **linked 安装的依赖与解析**:通过链接安装的 checkout 保留自己的 `node_modules`;需要与宿主共享实例的 dsh 包要**同时**声明在 `peerDependencies` 与 `devDependencies`(devDependency 副本供类型检查与独立测试),需要独立版本的第三方依赖与无状态 dsh 工具包放 `dependencies`。普通 linked import 走 Node 祖先顺序并检查每个目录当前的 peer 声明,更近的物理包先于更高的 peer 声明;link 目标可以没有 `package.json`,祖先 peer 仍生效;显式 `require.resolve(..., { paths })` 始终是原生查询;这些规则不会使已加载模块失效,也不校验 peer 版本范围。链接整个 checkout 不对运行中安装自身的包目录应用 peer 拦截;目标仍在 profile 内的链接(含其 pnpm store)算 profile 自己安装的内容。git 安装只拉源码、需作者提供自包含的 `prepare` 脚本 + 用户授权(pnpm ≥10 需在 profile 的 `pnpm-workspace.yaml` 里 `allowBuilds`);不想让用户授权则分发 npm 包或 tarball。
 
 ### 框架(framework)
