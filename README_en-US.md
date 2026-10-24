@@ -2,7 +2,7 @@
 
 # dsh-plugin-dev-agent-template
 
-[![Version](https://img.shields.io/badge/Version-0.1.7-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.1.7)
+[![Version](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.2.0)
 [![Copyright](https://img.shields.io/badge/Copyright-JularDepick-0066AA)](./COPYRIGHT)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](./LICENSE)
 
@@ -11,7 +11,7 @@
 
 </div>
 
-Still building your own dsh-plugin template?
+Still building your own dsh plugin template?
 
 Just clone this repository and let an Agent do the initialization and development for you, guided by one prompt.
 
@@ -23,6 +23,8 @@ Just clone this repository and let an Agent do the initialization and developmen
 This repository is a general-purpose dsh plugin development template: it ships the specs, translation presets, README templates and a blank AGENTS.md, plus an initialization prompt.
 
 You only need to talk to an Agent and confirm requirements and key decisions (plugin goal, naming, target dsh version, documentation language, etc.); the Agent transforms the repository in place into your plugin project skeleton — source, config and documentation in one go. Later, every new session reads AGENTS.md and picks up development right away.
+
+Presets track dsh 0.2.1-rc.1; plugin versions default to supporting dsh 0.2.1-rc.1 through 0.2.1-rc.3, with no developer-doc changes in that range.
 
 ## Why do you need it?
 

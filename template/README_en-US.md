@@ -1,8 +1,8 @@
 <div align="center">
 
-# dsh-TITLE-plugin
+# dsh-TITLE
 
-[![Version](https://img.shields.io/badge/Version-0.1.7-green)](https://github.com/<username>/dsh-TITLE-plugin/tree/v0.1.7)
+[![Version](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/<username>/dsh-TITLE/tree/v0.2.0)
 [![Copyright](https://img.shields.io/badge/Copyright-<username>-0066AA)](./COPYRIGHT)
 [![License](https://img.shields.io/badge/License-<license>-yellow)](./LICENSE)
 

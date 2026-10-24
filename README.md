@@ -2,7 +2,7 @@
 
 # dsh-plugin-dev-agent-template
 
-[![Version](https://img.shields.io/badge/Version-0.1.7-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.1.7)
+[![Version](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/JularDepick/dsh-plugin-dev-agent-template/tree/v0.2.0)
 [![Copyright](https://img.shields.io/badge/Copyright-JularDepick-0066AA)](./COPYRIGHT)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](./LICENSE)
 
@@ -23,6 +23,8 @@
 本仓库是一个通用 dsh 插件开发模板:预置了开发所需的规范文档、翻译预设、README 模板与 AGENTS.md 空白模板,并附带初始化提示词。
 
 你只需要与 Agent 对话,确认需求与关键决策(插件目标、命名、目标 dsh 版本、文档语言等),Agent 就会把仓库就地改造为你的插件项目骨架——源码、配置、文档体系一次到位。之后每次新开会话,它读取 AGENTS.md 即可接手继续开发。
+
+预置内容对应 dsh 0.2.1-rc.1,插件版本默认支持 dsh 0.2.1-rc.1 至 0.2.1-rc.3(该区间开发者文档无变更)。
 
 ## 为什么需要它?
 
