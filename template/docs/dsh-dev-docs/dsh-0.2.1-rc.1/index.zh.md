@@ -4,7 +4,7 @@
 
 [dsh](https://github.com/deepseek-ai/deepseek-harness) 官方插件开发文档的**中文版**合集索引。
 
-本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.2.1-rc.1**(npm 发布包版本号,对应官方仓库标签 `dsh-v0.2.1-rc.1`)的中文版(`.zh.md`)文档(英文原版见各 `.md`)。目录内 30 个文件已与该标签逐字节核对一致,作为本项目开发 dsh 插件时的参考指引。该文档集同样适用于 dsh 0.2.1-rc.2 与 dsh 0.2.1-rc.3:这三个版本之间 `docs/user/develop/` 无变更,故只保留本目录。
+本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.2.1-rc.1**(npm 发布包版本号,对应官方仓库标签 `dsh-v0.2.1-rc.1`)的中文版(`.zh.md`)文档(英文原版见各 `.md`)。目录内 30 个文件已与该标签逐字节核对一致,作为本项目开发 dsh 插件时的参考指引。该文档集同样适用于 dsh 0.2.1-rc.2 至 dsh 0.2.1-rc.5:这五个版本之间 `docs/user/develop/` 无变更,故 0.2.1 系列共用本目录;dsh 0.2.2-alpha.2 起的文档见 `docs/dsh-dev-docs/dsh-0.2.2-alpha.3/`。
 
 | 分块 | 作用 |
 |:---:|:---|
