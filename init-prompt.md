@@ -11,7 +11,7 @@
 ## 二、模板定位与预设
 
 - `template/` 下已提供(初始化时释放到仓库根目录):
-  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/`(先读 `index.agent.md` 速查表,再按需精读基础篇、框架篇与实战篇)
+  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/` 下按 dsh 版本存放多份快照(`dsh-0.2.1-rc.1/` 覆盖 0.2.1-rc.1 至 0.2.1-rc.5,`dsh-0.2.2-alpha.3/` 覆盖 0.2.2-alpha.2 至 0.2.2-alpha.3;先读与目标 dsh 版本对应目录的 `index.agent.md` 速查表,再按需精读基础篇、框架篇与实战篇)
   - 仓库级规范 `template/docs/repo-spec/tag-release-spec.md`(版本号、Tag、Release 命名)
   - 技术规格 `template/docs/tech-spec/translation-ini.md`(翻译文件规范)与翻译文件预设 `template/src/translation/`(仅含 `xx-YY.ini` 与基准模板,不含加载器源码)
   - README 预设:`template/README_zh-CN.md`、`template/README_en-US.md`(中英双语模板,含占位内容与语言互链;初始化时按项目实际替换并按核心语言更名,见"三")
@@ -32,7 +32,7 @@
 4. 初始化 git 状态:在根目录 `git init` 重新建立版本控制;询问用户是否已有在线仓库地址(如有则记录远程地址,后续 push 时配置 remote origin;没有则告知用户可后续创建,不擅自配置);初始提交时机与内容按用户意愿决定(见"九、守则要点提醒":git 写入需当次授权)。
 5. 确认 `AGENTS.md` 空白模板:`template/AGENTS.md` 已在步骤 3 释放到根目录(模板仓库已收录,无需网络下载);如需更新模板版本,按 `AGENTS.md` 守则区模板更新流程执行(用户明确要求时)。
 6. 与用户确认新项目核心信息与关键技术决策,并搭建项目骨架:
-   - 核心信息:插件目标(要做什么)、包名与简称(插件名称规范:`dsh-<核心名称>`,如 dsh-github,官方只要求 `dsh-` 前缀而不要求 `-plugin` 后缀,与用户确认核心名称)、目标 dsh 版本(决定 Release 命名,见 repo-spec;默认支持范围为 dsh 0.2.1-rc.1 至 dsh 0.2.1-rc.3)、项目文档语言核心(询问用户,默认 `README.md` 为中文,英文作为额外文档)。
+   - 核心信息:插件目标(要做什么)、包名与简称(插件名称规范:`dsh-<核心名称>`,如 dsh-github,官方只要求 `dsh-` 前缀而不要求 `-plugin` 后缀,与用户确认核心名称)、目标 dsh 版本(决定 Release 命名,见 repo-spec;默认支持范围为 dsh 0.2.1-rc.1 至 dsh 0.2.2-alpha.3)、项目文档语言核心(询问用户,默认 `README.md` 为中文,英文作为额外文档)。
    - 关键技术决策:交付形式(纯源码骨架 vs 可打包 bundle)、包管理器与构建工具(dsh 生态默认 pnpm + tsdown)、本次是否安装校验所需依赖与运行校验。未经授权不装依赖、不构建、不测试。
    - 搭建 `src/` 骨架(翻译预设已随释放就位,其余源码按本步骤生成):
      - 入口 `src/index.ts`:导出 `name`、`inject`、`apply(ctx, config)`,装配各模块。
@@ -42,14 +42,14 @@
        - 生成 `src/translation/index.ts`:按 locale 加载对应 `xx-YY.ini`、解析 `[translation]` 节键值、未命中回退默认语言(`zh-CN`)、提供语言切换入口;涉及的常量(回退语言、翻译目录)引用 `src/constants.ts`。
        - 键值与加载行为遵循 `docs/tech-spec/translation-ini.md`;文件缺失时回退空表,由主逻辑兜底。
      - 按新项目机制规划业务模块目录(如认证/凭证/工具等,以项目机制为准),模块内拆分类型定义与实现,占位方法以抛错或空值标明"尚未实现"。
-   - 补齐打包配置:根目录 `package.json`(声明 `type: module`(ESM)、`dsh.bundle`、`main/types`、`files`)、`cordis.patch.yml`(patch 层插入插件行)、`tsconfig.json`、`tsdown.config.ts`。
+   - 补齐打包配置:根目录 `package.json`(声明 `type: module`(ESM)、`dsh.bundle`、`engines.dsh`(按 repo-spec 的默认支持范围)、`main/types`、`files`)、`cordis.patch.yml`(patch 层插入插件行)、`tsconfig.json`、`tsdown.config.ts`。
    - 初始化项目文档体系:更新 `AGENTS.md` 的项目绑定区(概述/技术栈/目录结构/设计细节/版本号索引);完善 `version.index.md`(模板已随释放就位:记录项目当前版本号,并列出版本号迭代需同步更新的文件清单,含文件路径与行号;初始版本号按 repo-spec 规范确定起始值,如 `v0.2.0`,建立后向用户报告并确认,再登记进 AGENTS.md 版本号索引段);**询问用户是否添加 `.gitignore`**(按用户意愿建立;库包惯例:忽略 `node_modules/`、`.pnpm-store/`、`*.tgz`、产物目录等;版本文档占用 `v*-*.md` 规则;不做 IDE 类多余预留);按需增补 `docs/tech-spec/` 的机制规格文档;`LICENSE` 按用户意愿重建或延后。
    - 改造 README 预设:替换 `README_zh-CN.md`、`README_en-US.md` 中的占位内容(项目名、简介、特性、作者、仓库地址、许可证等)并补全正文,使其符合用户项目实际;按用户指定核心语言(默认中文)将对应语言版本更名为 `README.md`,另一语言版本保留 `README_<语言>.md` 命名;语言互链同步更新为更名后的文件名;README 命名与改造结果登记到 AGENTS.md 目录结构与 version.index.md 同步清单。询问用户是否乐意支持模板推广:若支持,在 README「相关链接」中新增条目「本仓库使用的插件模板: https://github.com/JularDepick/dsh-plugin-dev-agent-template」;不支持则不添加。
    - 改造 `AGENTS.md` 空白模板:
      - 替换作者信息:模板第 17 章作者信息段中的"项目作者 [JularDepick](https://github.com/JularDepick)"替换为用户的实际 GitHub 身份;按该章指引提醒用户确认,并将"项目作者已确认"标记为"是";
      - 填充项目绑定区:概述/技术栈/架构/目录结构/工作流程/开发时配置文件/设计细节/版本号索引/快捷命令等,按问答结论逐步填充(落点见"五、初始化收尾"迁移映射);
      - 守则区为硬约束:不修改守则内容与模板版本号,除非用户明确要求维护守则;作者信息段(第 17 章)按章内指引经用户确认后修改。
-   - 核对 dsh 插件开发者文档是否过时:将已收录版本(`docs/dsh-dev-docs/<版本>/` 中的版本号,即释放后的模板收录版本)与官方仓库 `docs/user/develop` 的最新文档/发布版本对照,提醒用户确认或由 Agent 自行确认;过时则按官方收录流程更新到 `docs/dsh-dev-docs/<新版本>/`。
+   - 核对 dsh 插件开发者文档是否过时:将已收录的各版本目录(`docs/dsh-dev-docs/<版本>/`)与官方仓库 `docs/user/develop` 的最新文档/发布版本对照(优先核对与目标 dsh 版本对应的目录),提醒用户确认或由 Agent 自行确认;目标版本未收录或已收录版本落后时,按官方收录流程新增 `docs/dsh-dev-docs/<新版本>/`,并同步 `docs/repo-spec/tag-release-spec.md` 的支持范围。
    - 最小验证:仅做**语法校验**与**模板可用性核对**——语法校验(如 TypeScript 类型/编译检查)、可用性核对(入口 `index.ts`、配置、常量、翻译加载器、打包配置等文件齐全且结构符合约定);**不搭载 dsh 运行时测试**(不安装/启动 dsh、不实际加载插件运行);校验所需工具缺失时经用户授权再安装。**初始化阶段到此为止,不进入功能实现**:业务模块等手段保持占位「尚未实现」,功能开发留待后续会话按用户指示进行(见步骤 9)。
 7. 根据向用户的询问和回复,维护 `AGENTS.md` 绑定具体实践场景:项目绑定区随问答结论逐步填充,直到仅凭 `AGENTS.md` 即可延续开发(见"五、初始化收尾")。
 8. 清除 `init-prompt.md`:初始化完成且自查通过后,删除本文件。
@@ -62,7 +62,7 @@
 1. 完整阅读根目录 `AGENTS.md`:守则区为硬约束;项目绑定区(概述/技术栈/目录结构/设计细节/版本号索引)随项目状态懒维护。
 2. 读 `version.index.md` 与 git log,确认当前真实版本号,向用户汇报确认;版本格式遵循项目内 repo 规范(通常位于 `docs/repo-spec/tag-release-spec.md`)。
 3. 读核心 README(中文版)与项目内技术文档(如 `docs/tech-spec/`),掌握既定机制设计;机制细节遵循对应 specs,不重复抄录。
-4. 读项目内已收录的 dsh 插件开发文档(通常位于 `docs/dsh-dev-docs/<版本>/`):先读 `index.agent.md` 速查表,涉及框架机制时精读基础篇与框架篇;未收录时回官方仓库 `docs/user/develop` 查阅。
+4. 读与目标 dsh 版本对应的项目内开发文档(通常位于 `docs/dsh-dev-docs/<版本>/`,多版本并存时按目标版本选择):先读 `index.agent.md` 速查表,涉及框架机制时精读基础篇与框架篇;未收录时回官方仓库 `docs/user/develop` 查阅。
 5. 动手前的关键技术决策先列给用户裁决;涉及安装/构建/测试须经授权。
 
 ## 五、初始化收尾:内容迁移持久化到 AGENTS.md
@@ -110,7 +110,7 @@
 - 事件:`ctx.on`/`ctx.emit`,四种模式(emit 广播/bail 短路/serial 顺序/waterfall 流水线,waterfall 监听器必须调用 `next()`);类型安全用声明合并扩展事件接口;Harness 事件遵循 `namespace/action` 命名,`turn/*`、`step/*`、`tool/call` 等是持久化会话事件类型而非同名 Cordis 事件,观察它们要监听 `session/event` 并检查 `event.type`。
 - bundle 打包:组合包(bundle)是附带一个配置层的 npm 包,manifest 声明 `dsh.bundle`(指向 patch 文件;patch 也接受有序文件列表,launcher 按序把它们作为同一层应用,文件内相对插件路径相对该文件自身解析);组合包用 `engines.dsh` SemVer 范围声明其支持的 DSH 版本(如 `"engines": { "dsh": ">=0.2.0 <0.3.0" }`),安装与 profile 启动会拒绝运行中的 DSH 不满足该范围的组合包,未声明 `engines.dsh` 时改为检查其 `@deepseek-ai/dsh*` peer 依赖范围;profile 是 `$DSH_HOME/profiles/<name>` 下描述可启动组合的目录,manifest 声明 `dsh.profile` 及有序 `bundles`。profile manifest 不需要手写:`dsh --profile <name> --from-default-profile <template>` 可从随附应用模板创建或重置 profile,`dsh plugin` 则以 base 为基础创建 profile 并维护已安装 bundle 列表(创建规则以 CLI 行为参考为准)。patch 以插件包名插入插件行;生效配置层顺序:profile bundles 列表 → profile 自己的 `cordis.patch.yml` → home 级 → 每个 `--patch` overlay,后应用的层按行胜出(整行替换 `config`,不深度合并);无 `dsh.bundle` 声明的包仍可安装但只作普通依赖(`dsh plugin` 打警告、不激活任何层)。`dsh plugin --profile <name> add <包>` 安装,安装后可用 `dsh --profile <name> --dump-config` 先验证层再启动;linked 安装的 checkout 保留自己的 `node_modules`,需与宿主共享实例的 dsh 包要同时声明在 `peerDependencies` 与 `devDependencies`(devDependency 副本供类型检查与独立测试),需要独立版本的第三方依赖与无状态 dsh 工具包放 `dependencies`;普通 linked import 走 Node 祖先顺序并检查每个目录当前的 peer 声明(更近的物理包先于更高的 peer 声明,link 目标可以没有 `package.json`),显式 `require.resolve(..., { paths })` 始终走原生查询,规则不会使已加载模块失效也不校验 peer 版本范围;git 安装只拉源码,需作者提供自包含的 `prepare` 脚本,且用户在 profile 的 `pnpm-workspace.yaml` 里 `allowBuilds` 授权;不希望用户授权则分发 npm 包或 tarball(`pnpm pack`)。
 - LLM 适配器:继承 `LlmAdapter` 覆写 `stream()`(异步生成 `StreamChunk`),经 `ctx.llm.registerAdapter(['provider'], adapter)` 注册;StreamChunk 协议:`block-start`/`text-delta`(或 `tool-call-delta`)/`block-end` 成对出现,`finish` 必须是最后一个分片、`usage` 在 `finish` 前,`index` 从 0 递增;工具调用 ID 用 `brandString<ToolCallId>('...')`(`ToolCallId` 来自 `@deepseek-ai/dsh-llm`,`brandString` 来自 `@deepseek-ai/dsh-brand`);错误抛带稳定 code 的 `LlmError`;合并 `attributionHeaders()` 并传递 `options.signal`;可覆写 `resolveModel()`、`listModels()`。
-- 按提示词配置持久化插件:创造模式提供 Plugin Manager 与只读运行时检查(`packages/extensions/tool-cordis`);插件配置属于当前 profile,影响其会话并在进程重启后保留(不再是"临时插件随卸载或进程退出消失")。流程:智能体编写纯配置组合包,在 patch 中插入目标包(如 `@deepseek-ai/dsh-mcp-client`),再经 `plugin_manager install_bundle` 安装;启用 HMR 时工具会出现在同一个运行中的会话里。校验需同时看管理结果(`application: applied`)与工具的实际调用(如 `mcp__demo__ping`);返回 `restart-required` 的已保存条目表示尚未激活,失败条目需修复配置。改配置前先读组合包 patch;停用条目用 Plugin Manager,移除用卸载组合包;可接受的配置与连接失败行为见官方 MCP client 参考。
+- 按提示词配置持久化插件:标准模式与创造模式提供 Plugin Manager(0.2.2 起其智能体工具在两种模式均启用;0.2.1 系列仅创造模式启用),创造模式另提供只读运行时检查(`packages/extensions/tool-cordis`);插件配置属于当前 profile,影响其会话并在进程重启后保留(不再是"临时插件随卸载或进程退出消失")。流程:智能体编写纯配置组合包,在 patch 中插入目标包(如 `@deepseek-ai/dsh-mcp-client`),再经 `plugin_manager install_bundle` 安装;启用 HMR 时工具会出现在同一个运行中的会话里。校验需同时看管理结果(`application: applied`)与工具的实际调用(如 `mcp__demo__ping`);返回 `restart-required` 的已保存条目表示尚未激活,失败条目需修复配置。改配置前先读组合包 patch;停用条目用 Plugin Manager,移除用卸载组合包;可接受的配置与连接失败行为见官方 MCP client 参考。
 - 目录组织:入口、配置 schema、全局常量(设计细节)独立成文件,机制按模块分目录,模块内拆分类型定义与实现;占位方法以抛错或空值标明"尚未实现"。
 - 代码规范:代码英文、注释中文(跨行注释)、无 emoji、对象封装、可复用模板提成独立文件、后端文件注释头标注作者。
 

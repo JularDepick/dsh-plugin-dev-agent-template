@@ -24,7 +24,7 @@ This repository is a general-purpose dsh plugin development template: it ships t
 
 You only need to talk to an Agent and confirm requirements and key decisions (plugin goal, naming, target dsh version, documentation language, etc.); the Agent transforms the repository in place into your plugin project skeleton — source, config and documentation in one go. Later, every new session reads AGENTS.md and picks up development right away.
 
-Presets track dsh 0.2.1-rc.1; plugin versions default to supporting dsh 0.2.1-rc.1 through 0.2.1-rc.3, with no developer-doc changes in that range.
+Presets include developer-doc snapshots for dsh 0.2.1-rc.1 and dsh 0.2.2-alpha.3; plugin versions default to supporting dsh 0.2.1-rc.1 through 0.2.2-alpha.3 (developer docs are unchanged from 0.2.1-rc.1 through 0.2.1-rc.5, and 0.2.2-alpha.3 differs from that range in two text-only updates).
 
 ## Why do you need it?
 
