@@ -11,7 +11,7 @@
 ## 二、模板定位与预设
 
 - `template/` 下已提供(初始化时释放到仓库根目录):
-  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/` 下按 dsh 版本存放多份快照(`dsh-0.2.1-rc.1/` 覆盖 0.2.1-rc.1 至 0.2.1-rc.5,`dsh-0.2.2-alpha.3/` 覆盖 0.2.2-alpha.2 至 0.2.2-alpha.3;先读与目标 dsh 版本对应目录的 `index.agent.md` 速查表,再按需精读基础篇、框架篇与实战篇)
+  - dsh 官方插件开发文档收录:`template/docs/dsh-dev-docs/<版本>/` 下按 dsh 版本存放多份快照(`dsh-0.2.1-rc.1/` 覆盖 0.2.1-rc.1 至 0.2.1-rc.5,`dsh-0.2.2-rc.1/` 覆盖 0.2.2-alpha.2 至 0.2.2-rc.1;先读与目标 dsh 版本对应目录的 `index.agent.md` 速查表,再按需精读基础篇、框架篇与实战篇)
   - 仓库级规范 `template/docs/repo-spec/tag-release-spec.md`(版本号、Tag、Release 命名)
   - 技术规格 `template/docs/tech-spec/translation-ini.md`(翻译文件规范)与翻译文件预设 `template/src/translation/`(仅含 `xx-YY.ini` 与基准模板,不含加载器源码)
   - README 预设:`template/README_zh-CN.md`、`template/README_en-US.md`(中英双语模板,含占位内容与语言互链;初始化时按项目实际替换并按核心语言更名,见"三")
@@ -32,7 +32,7 @@
 4. 初始化 git 状态:在根目录 `git init` 重新建立版本控制;询问用户是否已有在线仓库地址(如有则记录远程地址,后续 push 时配置 remote origin;没有则告知用户可后续创建,不擅自配置);初始提交时机与内容按用户意愿决定(见"九、守则要点提醒":git 写入需当次授权)。
 5. 确认 `AGENTS.md` 空白模板:`template/AGENTS.md` 已在步骤 3 释放到根目录(模板仓库已收录,无需网络下载);如需更新模板版本,按 `AGENTS.md` 守则区模板更新流程执行(用户明确要求时)。
 6. 与用户确认新项目核心信息与关键技术决策,并搭建项目骨架:
-   - 核心信息:插件目标(要做什么)、包名与简称(插件名称规范:`dsh-<核心名称>`,如 dsh-github,官方只要求 `dsh-` 前缀而不要求 `-plugin` 后缀,与用户确认核心名称)、目标 dsh 版本(决定 Release 命名,见 repo-spec;默认支持范围为 dsh 0.2.1-rc.1 至 dsh 0.2.2-alpha.3)、项目文档语言核心(询问用户,默认 `README.md` 为中文,英文作为额外文档)。
+   - 核心信息:插件目标(要做什么)、包名与简称(插件名称规范:`dsh-<核心名称>`,如 dsh-github,官方只要求 `dsh-` 前缀而不要求 `-plugin` 后缀,与用户确认核心名称)、目标 dsh 版本(决定 Release 命名,见 repo-spec;默认支持范围为 dsh 0.2.1-rc.1 至 dsh 0.2.2-rc.1)、项目文档语言核心(询问用户,默认 `README.md` 为中文,英文作为额外文档)。
    - 关键技术决策:交付形式(纯源码骨架 vs 可打包 bundle)、包管理器与构建工具(dsh 生态默认 pnpm + tsdown)、本次是否安装校验所需依赖与运行校验。未经授权不装依赖、不构建、不测试。
    - 搭建 `src/` 骨架(翻译预设已随释放就位,其余源码按本步骤生成):
      - 入口 `src/index.ts`:导出 `name`、`inject`、`apply(ctx, config)`,装配各模块。

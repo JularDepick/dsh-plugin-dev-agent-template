@@ -1,10 +1,10 @@
-# Agent 阅读指南 —— dsh 插件开发文档(v0.2.2-alpha.3)
+# Agent 阅读指南 —— dsh 插件开发文档(v0.2.2-rc.1)
 
 本文档是给 Agent(自动编程代理)看的使用索引:说明这份文档集装了什么、各篇回答什么问题、在涉及 dsh 插件开发的常见任务中该查哪篇。用户一般不读本文档。
 
 ## 这份文档集是什么
 
-本目录 `docs/dsh-dev-docs/dsh-0.2.2-alpha.3/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.2.2-alpha.3(对应官方仓库标签 `dsh-v0.2.2-alpha.3`)的中文版插件开发文档(共 10 篇 + 本索引;英文原版见各 `.md`,中文见 `.zh.md`;30 个上游文件已与该标签逐字节核对一致)。它只覆盖 `docs/user/develop/` 路径;原文档中指向仓其他位置的链接(根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等)未随本目录下载,需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。各篇同目录的 `.i18n.yaml` 是上游的双语一致性记录(按标题分节记录中英哈希),原样收录,与本项目自身的翻译机制无关。该文档集对 dsh 0.2.2-alpha.2 与 dsh 0.2.2-alpha.3 均适用:两者之间 `docs/user/develop/` 无变更。与 `docs/dsh-dev-docs/dsh-0.2.1-rc.1/` 快照相比仅两处正文文字更新(`practice/dynamic-cordis` 的 Plugin Manager 模式说明、`framework/events` 的 Cordis 事件示例;对应 `.i18n.yaml` 哈希记录随之更新),其余上游文件逐字节一致。
+本目录 `docs/dsh-dev-docs/dsh-0.2.2-rc.1/` 收录了 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 0.2.2-rc.1(对应官方仓库标签 `dsh-v0.2.2-rc.1`)的中文版插件开发文档(共 10 篇 + 本索引;英文原版见各 `.md`,中文见 `.zh.md`;30 个上游文件已与该标签逐字节核对一致)。它只覆盖 `docs/user/develop/` 路径;原文档中指向仓其他位置的链接(根 `README.zh.md`、`cookbook/`、`subsystems/`、`apps/cli/`、`packages/`、`capability-seams.md` 等)未随本目录下载,需要时回[官方仓库](https://github.com/deepseek-ai/deepseek-harness)查看。各篇同目录的 `.i18n.yaml` 是上游的双语一致性记录(按标题分节记录中英哈希),原样收录,与本项目自身的翻译机制无关。该文档集对 dsh 0.2.2-alpha.2 至 dsh 0.2.2-rc.1 均适用:这些版本之间 `docs/user/develop/` 无变更。与 `docs/dsh-dev-docs/dsh-0.2.1-rc.1/` 快照相比仅两处正文文字更新(`practice/dynamic-cordis` 的 Plugin Manager 模式说明、`framework/events` 的 Cordis 事件示例;对应 `.i18n.yaml` 哈希记录随之更新),其余上游文件逐字节一致。
 
 ## 速查:什么任务查哪篇
 

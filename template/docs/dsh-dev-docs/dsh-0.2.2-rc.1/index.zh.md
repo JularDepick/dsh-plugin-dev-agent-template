@@ -1,10 +1,10 @@
-# dsh 插件开发文档(v0.2.2-alpha.3)
+# dsh 插件开发文档(v0.2.2-rc.1)
 
 > 面向 Agent 的利用指南与速查:请查看 `index.agent.md`。
 
 [dsh](https://github.com/deepseek-ai/deepseek-harness) 官方插件开发文档的**中文版**合集索引。
 
-本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.2.2-alpha.3**(npm 发布包版本号,对应官方仓库标签 `dsh-v0.2.2-alpha.3`)的中文版(`.zh.md`)文档(英文原版见各 `.md`)。目录内 30 个文件已与该标签逐字节核对一致,作为本项目开发 dsh 插件时的参考指引。该文档集同样适用于 dsh 0.2.2-alpha.2 与 dsh 0.2.2-alpha.3:两者之间 `docs/user/develop/` 无变更,故 0.2.2 系列共用本目录。与 `docs/dsh-dev-docs/dsh-0.2.1-rc.1/` 快照相比仅两处正文文字更新(`practice/dynamic-cordis` 的 Plugin Manager 模式说明、`framework/events` 的 Cordis 事件示例;对应 `.i18n.yaml` 哈希记录随之更新),其余上游文件逐字节一致。
+本目录存放 DeepSeek-Harness 官方仓库 `docs/user/develop/` 在版本 **0.2.2-rc.1**(npm 发布包版本号,对应官方仓库标签 `dsh-v0.2.2-rc.1`)的中文版(`.zh.md`)文档(英文原版见各 `.md`)。目录内 30 个文件已与该标签逐字节核对一致,作为本项目开发 dsh 插件时的参考指引。该文档集同样适用于 dsh 0.2.2-alpha.2 至 dsh 0.2.2-rc.1:这些版本之间 `docs/user/develop/` 无变更,故 0.2.2 系列共用本目录。与 `docs/dsh-dev-docs/dsh-0.2.1-rc.1/` 快照相比仅两处正文文字更新(`practice/dynamic-cordis` 的 Plugin Manager 模式说明、`framework/events` 的 Cordis 事件示例;对应 `.i18n.yaml` 哈希记录随之更新),其余上游文件逐字节一致。
 
 | 分块 | 作用 |
 |:---:|:---|
